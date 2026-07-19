@@ -1,0 +1,36 @@
+\newcommand{\AND}{\unskip
+    \cleaders\copy\ANDbox\hskip\wd\ANDbox
+    \ignorespaces
+}
+\newsavebox\ANDbox
+\sbox\ANDbox{$|$}
+
+\begin{header}
+    \centering
+
+    % Name
+    {\fontsize{30 pt}{30 pt}\selectfont AHMED NABIL\par}
+
+    % Subtitle with minimal space
+    {\fontsize{13 pt}{13 pt}\selectfont \textcolor{gray}{Full Stack Engineer}\par}
+
+    \vspace{4pt} % Small gap before contact info
+    \normalsize
+
+    \mbox{
+    % \faEnvelope\hspace{4pt}
+    \href{mailto:ahmniab11@gmail.com}{ahmniab11@gmail.com}}%
+    \kern 10pt \AND \kern 10pt%
+    \mbox{
+    % \faPhone \hspace{4pt}
+    \href{tel:+201140019473}{+201140019473}}%
+    \kern 10pt \AND \kern 10pt%
+    \mbox{
+    % \faLinkedin\hspace{4pt}
+    \href{https://linkedin.com/in/ahmniab}{Ahmed Nabil \faIcon{linkedin}}}%
+    \kern 10pt \AND \kern 10pt%
+    \mbox{
+    % \faGithub\hspace{4pt}
+    \href{https://github.com/ahmniab}{ahmniab \faIcon{github}}}%
+
+\end{header}

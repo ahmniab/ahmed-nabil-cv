@@ -1,0 +1,38 @@
+# LaTeX build artifacts (keep main.pdf committed, ignore others)
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.bbl
+*.blg
+*.toc
+*.lot
+*.lof
+*.idx
+*.ilg
+*.ind
+*.ist
+
+# Optional: Ignore the compiled PDF if you only want it from GitHub Actions
+# main.pdf
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Python cache (if using any Python scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local environment
+.env
+.venv/
+env/

@@ -1,0 +1,111 @@
+name: Compile CV and Save PDF
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'config/**'
+      - 'sections/**'
+      - 'main.tex'
+      - '.github/workflows/compile-cv.yml'
+  workflow_dispatch:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup TeX Live
+        uses: aslushnikov/setup-texlive-action@v1
+        with:
+          packages: >-
+            scheme-basic
+            geometry
+            titlesec
+            tabularx
+            xcolor
+            enumitem
+            fontawesome5
+            amsmath
+            hyperref
+            eso-pic
+            calc
+            bookmark
+            lastpage
+            changepage
+            paracol
+            ifthen
+            needspace
+            iftex
+
+      - name: Compile LaTeX to PDF
+        run: |
+          cd ${{ github.workspace }}
+          pdflatex -interaction=nonstopmode -file-line-error -jobname=ahmed-nabil-resume main.tex
+          # Run twice to resolve references and page numbers
+          pdflatex -interaction=nonstopmode -file-line-error -jobname=ahmed-nabil-resume main.tex
+
+      - name: Check if PDF was generated
+        run: |
+          if [ -f ahmed-nabil-resume.pdf ]; then
+            echo "✅ PDF generated successfully"
+            ls -lh ahmed-nabil-resume.pdf
+          else
+            echo "❌ PDF generation failed"
+            exit 1
+          fi
+
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cv-pdf
+          path: ahmed-nabil-resume.pdf
+          retention-days: 30
+
+      - name: Commit and push PDF to repository
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          # Check if PDF changed
+          if git diff --quiet ahmed-nabil-resume.pdf; then
+            echo "No changes to PDF, skipping commit"
+          else
+            git add ahmed-nabil-resume.pdf
+            git commit -m "build: compile CV from LaTeX [skip ci]" || echo "No changes to commit"
+            git push
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: main.pdf
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to GitHub Packages (optional)
+        if: success()
+        run: |
+          echo "PDF compiled successfully and available as artifact above"
+          echo "To download: Use 'Actions' tab → latest run → 'cv-pdf' artifact"
+
+      - name: Show LaTeX log on failure
+        if: failure()
+        run: |
+          if [ -f main.log ]; then
+            echo "=== LaTeX Compilation Log ==="
+            cat main.log
+          fi
